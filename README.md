@@ -19,6 +19,10 @@ save the token (generatedtoken)
 
 localhost:8085/hello/notsecured greets hello - no security applied for this 
 
-localhost:8085/secured need a get request with a header "authorization" and value as "Token (generatedtoken)"
+localhost:8085/hello/secured need a get request with a header "authorization" and value as "Token (generatedtoken)"
+
+swagger documented this as well 
+
+http://localhost:8085/swagger-ui.html
 
 
