@@ -9,20 +9,22 @@ import java.util.List;
 public class JwtUserDetails implements UserDetails {
 
     private String userName;
-    private Long userId;
     private String token;
-    private Collection<? extends GrantedAuthority> grantedAuthorities;
+    private Long id;
+    private Collection<? extends GrantedAuthority> authorities;
 
-    public JwtUserDetails(String userName, long userId, String token, List<GrantedAuthority> grantedAuthorityList) {
+
+    public JwtUserDetails(String userName, long id, String token, List<GrantedAuthority> grantedAuthorities) {
+
         this.userName = userName;
-        this.userId = userId;
-        this.token = token;
-        this.grantedAuthorities = grantedAuthorityList;
+        this.id = id;
+        this.token= token;
+        this.authorities = grantedAuthorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     @Override
@@ -55,35 +57,18 @@ public class JwtUserDetails implements UserDetails {
         return true;
     }
 
+
     public String getUserName() {
         return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public String getToken() {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+
+    public Long getId() {
+        return id;
     }
 
-    public Collection<? extends GrantedAuthority> getGrantedAuthorities() {
-        return grantedAuthorities;
-    }
-
-    public void setGrantedAuthorities(Collection<? extends GrantedAuthority> grantedAuthorities) {
-        this.grantedAuthorities = grantedAuthorities;
-    }
 }

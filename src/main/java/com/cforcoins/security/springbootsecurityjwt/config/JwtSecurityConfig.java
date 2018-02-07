@@ -1,5 +1,6 @@
 package com.cforcoins.security.springbootsecurityjwt.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,9 +9,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.cforcoins.security.springbootsecurityjwt.security.JwtAuthenticationEntryPoint;
-import com.cforcoins.security.springbootsecurityjwt.security.JwtAuthenticationFilter;
+import com.cforcoins.security.springbootsecurityjwt.security.JwtAuthenticationTokenFilter;
 import com.cforcoins.security.springbootsecurityjwt.security.JwtAuthenticationProvider;
 import com.cforcoins.security.springbootsecurityjwt.security.JwtSuccessHandler;
 
@@ -22,7 +24,9 @@ import java.util.Collections;
 public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
+    @Autowired
     private JwtAuthenticationProvider authenticationProvider;
+    @Autowired
     private JwtAuthenticationEntryPoint entrypoint;
 
     @Bean
@@ -32,9 +36,9 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter()
+    public JwtAuthenticationTokenFilter authenticationTokenFilter()
     {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter();
+        JwtAuthenticationTokenFilter filter = new JwtAuthenticationTokenFilter();
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(new JwtSuccessHandler());
         return filter;
@@ -47,9 +51,12 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests().antMatchers("**/rest/**").authenticated()
                 .and()
-                .exceptionHandling().authenticationEntryPoint(entrypoint);
+                .exceptionHandling().authenticationEntryPoint(entrypoint)
+                .and()
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.headers().cacheControl();
 
     }
 }

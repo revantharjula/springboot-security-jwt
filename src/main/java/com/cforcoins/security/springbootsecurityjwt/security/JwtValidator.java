@@ -9,11 +9,12 @@ import org.springframework.stereotype.Component;
 public class JwtValidator {
     private String secret = "revanth";
 
-    JwtUser jwtUser = null;
-
-
     public JwtUser validate(String token){
+
+        JwtUser jwtUser = null;
+
         try {
+
             Claims body = Jwts.parser()
                     .setSigningKey(secret)
                     .parseClaimsJws(token)
@@ -21,8 +22,9 @@ public class JwtValidator {
 
             jwtUser = new JwtUser();
             jwtUser.setUserName(body.getSubject());
-            jwtUser.setUserId(Long.parseLong((String) body.get("userId")));
-            jwtUser.setRole((String) body.get("Role"));
+            System.out.println(jwtUser.getUserName());
+            jwtUser.setId(Long.parseLong((String) body.get("id")));
+            jwtUser.setRole((String) body.get("role"));
 
         }
         catch (Exception e){

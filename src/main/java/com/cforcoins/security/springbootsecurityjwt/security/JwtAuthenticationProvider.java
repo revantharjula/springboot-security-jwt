@@ -1,5 +1,6 @@
 package com.cforcoins.security.springbootsecurityjwt.security;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.cforcoins.security.springbootsecurityjwt.model.JwtAuthenticationToken;
 import com.cforcoins.security.springbootsecurityjwt.model.JwtUser;
 import com.cforcoins.security.springbootsecurityjwt.model.JwtUserDetails;
@@ -17,7 +18,7 @@ import java.util.List;
 public class JwtAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
-    private JwtValidator jwtValidator;
+    private JwtValidator validator;
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws AuthenticationException {
@@ -31,16 +32,35 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
 
         String token = jwtAuthenticationToken.getToken();
 
-         JwtUser jwtUser = jwtValidator.validate(token);
+         JwtUser jwtUser = validator.validate(token);
 
-         if (jwtUser == null)
+         //if (jwtUser == null || jwtUser.getRole() == "admin" )
+
+        String role = jwtUser.getRole();
+
+        System.out.println(jwtUser.toString() + "before if check");
+
+
+        //if (jwtUser == null)
+         if (!role.equals("admin"))
          {
-             throw new RuntimeException("Token Invalid");
+             System.out.println(role);
+             System.out.println(jwtUser.toString() + " Inside check");
+             throw new RuntimeException("Token Invalid jaffa token");
          }
 
-         List<GrantedAuthority> grantedAuthorityList = AuthorityUtils.commaSeparatedStringToAuthorityList(jwtUser.getRole());
 
-         return new JwtUserDetails(jwtUser.getUserName(),jwtUser.getUserId(),token, grantedAuthorityList);
+        // List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(jwtUser.getRole());
+
+        // return new JwtUserDetails(jwtUser.getUserName(),jwtUser.getUserId(),token, grantedAuthorities);
+
+        System.out.println(jwtUser.getRole() + "after if check");
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList(jwtUser.getRole());
+        System.out.println(grantedAuthorities);
+        return new JwtUserDetails(jwtUser.getUserName(), jwtUser.getId(),
+                token,
+                grantedAuthorities);
 
     }
 
